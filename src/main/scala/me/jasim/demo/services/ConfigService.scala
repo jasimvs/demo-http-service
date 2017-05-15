@@ -1,4 +1,4 @@
-package me.jasim.demo
+package me.jasim.demo.services
 
 import com.typesafe.config.ConfigFactory
 

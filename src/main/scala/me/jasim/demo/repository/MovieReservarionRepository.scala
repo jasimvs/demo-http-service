@@ -18,7 +18,7 @@ trait MovieReservationRepository {
 
 }
 
-trait MovieReservationRepositoryInMemory extends MovieReservationRepository {
+trait MovieReservationInMemoryRepository extends MovieReservationRepository {
 
   private val shows: scala.collection.mutable.Set[Show] = scala.collection.mutable.Set.empty
 
@@ -34,7 +34,8 @@ trait MovieReservationRepositoryInMemory extends MovieReservationRepository {
   override def bookTicket(show: Show)(implicit ec: ExecutionContext) =
     EitherT.right[Future, String, Show](Future.successful({
       val updatedShow = show.copy(reservedSeats = show.reservedSeats + 1)
-      shows.update(updatedShow, true)
+      shows.remove(show)
+      shows.add(updatedShow)
       updatedShow
     }))
 
