@@ -14,7 +14,7 @@ import scala.concurrent._
   */
 trait ReservationService {
 
-  def registerShow(imdbId: String, availableSeats: Int, screenId: String)(implicit ec: ExecutionContext): EitherT[Future, _ <: String, _ <: Show]
+  def registerShow(imdbId: String, screenId: String, availableSeats: Int)(implicit ec: ExecutionContext): EitherT[Future, _ <: String, _ <: Show]
 
   def reserveTicket(imdbId: String, screenId: String): EitherT[Future, _ <: String, _ <: Show]
 
@@ -26,8 +26,8 @@ trait ReservationService {
 trait ReservationServiceInMemoryImpl extends ReservationService with MovieReservationRepository with ImdbServiceEmptyImpl {
 
   override def registerShow(imdbId: String,
-                            availableSeats: Int,
-                            screenId: String)(implicit ec: ExecutionContext):  EitherT[Future, String, Show] = {
+                            screenId: String,
+                            availableSeats: Int)(implicit ec: ExecutionContext):  EitherT[Future, String, Show] = {
     EitherT(
       getShowDetails(imdbId, screenId)
         .map(x => EitherT.left(Future.successful("Show already exists")))

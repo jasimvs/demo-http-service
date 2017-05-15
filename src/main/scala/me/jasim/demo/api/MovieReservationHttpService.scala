@@ -29,6 +29,7 @@ trait MovieReservationHttpService extends ReservationService {
       for {
         req <- req.as(jsonOf[RegisterShowRequest])
         resp <- Ok(req.asJson)
+//        resp <- Ok(registerShow(req.imdbId, req.screenId, req.availableSeats).asJson) // TODO implement this
       } yield resp
   }
 
@@ -38,6 +39,7 @@ trait MovieReservationHttpService extends ReservationService {
       for {
         req <- req.as(jsonOf[ReserveTicketRequest])
         resp <- Ok(req.asJson)
+//        resp <- Ok(reserveTicket(req.imdbId, req.screenId)) // TODO implement this
       } yield resp
   }
 
