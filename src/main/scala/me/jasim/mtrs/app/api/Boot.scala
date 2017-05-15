@@ -1,24 +1,25 @@
-package me.jasim.demo
+package me.jasim.mtrs.app.api
 
-import org.http4s.util.StreamApp
-import org.http4s.server.blaze._
+import com.typesafe.scalalogging.LazyLogging
 import fs2.{Stream, Task}
-import me.jasim.demo.api.MovieReservationRoutes
-import me.jasim.demo.core.ReservationServiceImpl
-import me.jasim.demo.repository.MovieReservationInMemoryRepository
-import me.jasim.demo.services.{ConfigService, ImdbServiceEmptyImpl}
+import me.jasim.mtrs.core.ReservationServiceImpl
+import me.jasim.mtrs.infra.imdb.ImdbServiceEmptyImpl
+import me.jasim.mtrs.infra.repo.MovieReservationInMemoryRepository
+import org.http4s.server.blaze._
+import org.http4s.util.StreamApp
 
 /**
   * Created by jsulaiman on 5/14/17.
   */
 object Boot extends StreamApp {
 
-  val conf = ConfigService.loadConfig("application.conf") // if config fails, let it crash
+  val conf = Config.loadConfig("application.conf") // if config fails, let it crash
 
   val movieShowService = new MovieReservationRoutes
                              with ReservationServiceImpl
                              with MovieReservationInMemoryRepository
-                             with ImdbServiceEmptyImpl {}
+                             with ImdbServiceEmptyImpl
+                             with LazyLogging {}
 
   override def stream(args: List[String]): Stream[Task, Nothing] = {
     BlazeBuilder

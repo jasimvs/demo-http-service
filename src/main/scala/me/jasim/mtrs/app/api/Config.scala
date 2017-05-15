@@ -1,11 +1,11 @@
-package me.jasim.demo.services
+package me.jasim.mtrs.app.api
 
 import com.typesafe.config.ConfigFactory
 
 /**
   * Created by jsulaiman on 5/14/17.
   */
-object ConfigService {
+object Config {
 
   /**
     * Throws exception if unable to read config file

@@ -1,22 +1,12 @@
-package me.jasim.demo.repository
+package me.jasim.mtrs.infra.repo
 
-import cats.data.EitherT, cats.implicits.catsStdInstancesForFuture
-import me.jasim.demo.core.Show
+import cats.data.EitherT
+import cats.implicits.catsStdInstancesForFuture
+import me.jasim.mtrs.core.{MovieReservationRepository, Show}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
-  * Created by jsulaiman on 5/15/17.
-  */
-trait MovieReservationRepository {
 
-  def getShows(implicit ec: ExecutionContext): EitherT[Future, String, Set[Show]]
-
-  def addShow(show: Show)(implicit ec: ExecutionContext): EitherT[Future, String, Show]
-
-  def bookTicket(show: Show)(implicit ec: ExecutionContext): EitherT[Future, String, Show]
-
-}
 
 trait MovieReservationInMemoryRepository extends MovieReservationRepository {
 
@@ -29,7 +19,7 @@ trait MovieReservationInMemoryRepository extends MovieReservationRepository {
     if (shows.add(show))
       EitherT.right[Future, String, Show](Future.successful(show))
     else
-      EitherT.left[Future, String, Show](Future.successful("Could not add."))
+      EitherT.left[Future, String, Show](Future.successful("Could not add show."))
 
   override def bookTicket(show: Show)(implicit ec: ExecutionContext) =
     EitherT.right[Future, String, Show](Future.successful({

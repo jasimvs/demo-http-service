@@ -1,4 +1,4 @@
-package me.jasim.demo.core
+package me.jasim.mtrs.core
 
 /**
   * Created by jsulaiman on 5/14/17.

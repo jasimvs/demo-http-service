@@ -1,17 +1,10 @@
-package me.jasim.demo.services
+package me.jasim.mtrs.infra.imdb
 
-import cats.data._, cats.implicits._
+import cats.data._
+import cats.implicits._
+import me.jasim.mtrs.core.ImdbService
 
 import scala.concurrent.{ExecutionContext, Future}
-
-/**
-  * Created by jsulaiman on 5/15/17.
-  */
-trait ImdbService {
-
-  def getImdbTitle(imdbId: String)(implicit ec: ExecutionContext): EitherT[Future, String, String]
-
-}
 
 trait ImdbServiceEmptyImpl extends ImdbService {
 
