@@ -27,8 +27,7 @@ trait ReservationServiceInMemoryImpl extends ReservationService with MovieReserv
 
   override def registerShow(imdbId: String,
                             availableSeats: Int,
-                            screenId: String)(implicit ec: ExecutionContext):  EitherT[Future, _ <: String, _ <: Show] = {
-
+                            screenId: String)(implicit ec: ExecutionContext):  EitherT[Future, String, Show] = {
     EitherT(
       getShowDetails(imdbId, screenId)
         .map(x => EitherT.left(Future.successful("Show already exists")))
@@ -43,13 +42,11 @@ trait ReservationServiceInMemoryImpl extends ReservationService with MovieReserv
 
   private val singleThreadEc = ExecutionContext.fromExecutorService(Executors.newSingleThreadExecutor)
 
-  override def reserveTicket(imdbId: String, screenId: String): EitherT[Future, _ <: String, _ <: Show]  = {
+  override def reserveTicket(imdbId: String, screenId: String): EitherT[Future, String, Show]  = {
     implicit val ec: ExecutionContext = singleThreadEc
 
-    for {
-      show: Show    <- getShowDetails(imdbId, screenId)
-      booked: Show  <- bookTicket(show)
-    } yield booked
+    getShowDetails(imdbId, screenId)
+      .flatMap(bookTicket)
   }
 
   private def bookTicket(show: Show)(implicit ec: ExecutionContext): EitherT[Future, _ <: String, _ <: Show] = {
