@@ -1,8 +1,5 @@
 package me.jasim.mtrs.core
 
-import java.util.concurrent.Executors
-
-import cats.implicits._
 import cats.data.EitherT
 import cats.implicits.catsStdInstancesForFuture
 
@@ -16,7 +13,8 @@ trait ReservationService {
   def registerShow(imdbId: String, screenId: String, availableSeats: Int)
                   (implicit ec: ExecutionContext): EitherT[Future, String, Show]
 
-  def reserveTicket(imdbId: String, screenId: String): EitherT[Future, String, Show]
+  def reserveTicket(imdbId: String, screenId: String)
+                   (implicit ec: ExecutionContext): EitherT[Future, String, Show]
 
   def getShowDetails(imdbId: String, screenId: String)
                     (implicit ec: ExecutionContext): EitherT[Future, String, Show]
@@ -26,32 +24,31 @@ trait ReservationService {
 trait ReservationServiceImpl extends ReservationService {
   this: MovieReservationRepository with ImdbService =>
 
-  override def registerShow(imdbId: String,
-                            screenId: String,
-                            availableSeats: Int)(implicit ec: ExecutionContext):  EitherT[Future, String, Show] = {
+  override def registerShow(imdbId: String, screenId: String, availableSeats: Int)
+                           (implicit ec: ExecutionContext):  EitherT[Future, String, Show] = {
 
     val titleEither = getImdbTitle(imdbId)
-    val existingShow = getShowDetails(imdbId, screenId)
+    val existingShowError = getShowDetails(imdbId, screenId)
       .map(_ => "Show already registered.")
-      .swap
+
+    val noExistingShow = existingShowError.swap
 
     for {
-      _ <- existingShow
+      _ <- noExistingShow
       title <- titleEither
       show <- addShow(Show(imdbId, screenId, title, availableSeats, 0))
     } yield show
   }
 
-  private val singleThreadEc = ExecutionContext.fromExecutorService(Executors.newSingleThreadExecutor)
-
-  override def reserveTicket(imdbId: String, screenId: String): EitherT[Future, String, Show]  = {
-    implicit val ec: ExecutionContext = singleThreadEc
+  override def reserveTicket(imdbId: String, screenId: String)
+                            (implicit ec: ExecutionContext): EitherT[Future, String, Show]  = {
 
     getShowDetails(imdbId, screenId)
       .flatMap(s => bookTicketForShow(s))
   }
 
-  private def bookTicketForShow(show: Show)(implicit ec: ExecutionContext): EitherT[Future, String, Show] = {
+  private def bookTicketForShow(show: Show)
+                               (implicit ec: ExecutionContext): EitherT[Future, String, Show] = {
     val remainingSeats = show.availableSeats - show.reservedSeats
     if (remainingSeats > 0) {
       bookTicket(show)

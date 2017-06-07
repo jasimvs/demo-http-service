@@ -5,12 +5,13 @@ import cats.implicits.catsStdInstancesForFuture
 import me.jasim.mtrs.core.{MovieReservationRepository, Show}
 
 import scala.concurrent.{ExecutionContext, Future}
-
+import scala.collection.JavaConverters._
 
 
 trait MovieReservationInMemoryRepository extends MovieReservationRepository {
 
-  private val shows: scala.collection.mutable.Set[Show] = scala.collection.mutable.Set.empty
+  private val shows: scala.collection.mutable.Set[Show] = java.util.Collections.newSetFromMap(
+    new java.util.concurrent.ConcurrentHashMap[Show, java.lang.Boolean]).asScala
 
   override def getShows(implicit ec: ExecutionContext) =
     EitherT.right[Future, String, Set[Show]](Future.successful(shows.toSet))
