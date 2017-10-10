@@ -4,7 +4,7 @@ A HTTP service using Http4s, Circe and Cats.
 
 This is my first attempt to use Http4s, Circe, Cats, and try to write as pure as practical FP code.
 
-The app is a simple move reservation service, which allows user to register a show, book tickets for regitered shows, and get a a shows current status.
+The app is a simple movie reservation service, which allows user to register a show, book tickets for regitered shows, and get a a shows current status.
 
 Use `sbt run` to start the program.
 
